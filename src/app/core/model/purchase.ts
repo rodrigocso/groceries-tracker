@@ -1,9 +1,8 @@
 import { Item } from './item';
-import { Store } from './store';
 
 export interface Purchase {
   id: number;
-  store: Store;
+  storeId: number;
   transactionDate: string;
   item: Item;
   quantity: number;

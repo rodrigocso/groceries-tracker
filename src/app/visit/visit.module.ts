@@ -5,7 +5,6 @@ import { VisitComponent } from './component/visit/visit.component';
 import { VisitService } from './service/visit.service';
 import { VisitRoutingModule } from './visit-routing.module';
 
-
 @NgModule({
   declarations: [VisitComponent],
   imports: [

@@ -1,0 +1,30 @@
+<div *ngIf="selectedItem; then displayItem else selectItem"></div>
+<ng-template #displayItem>
+  <ng-container *ngTemplateOutlet="searchDisplayTemplate || defaultDisplay; context: itemTemplateContext">
+  </ng-container>
+</ng-template>
+<ng-template #selectItem>
+  <mat-form-field>
+    <input matInput
+           placeholder="Product"
+           type="text"
+           [formControl]="inputCtrl"
+           [matAutocomplete]="itemAutocomplete">
+    <mat-autocomplete #itemAutocomplete="matAutocomplete" (optionSelected)="onOptionSelected($event)">
+      <mat-option *ngFor="let item of searchResults$ | async" [value]="item">
+        <ng-container *ngTemplateOutlet="searchDisplayTemplate || defaultDisplay; context: {$implicit: item}">
+          <!-- 
+            need to customize mat classes to render customized options
+            line-height, spacing, width, height etc.
+          -->
+        </ng-container>
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+</ng-template>
+
+
+
+<ng-template #defaultDisplay>
+  {{ selectedItem }}
+</ng-template>

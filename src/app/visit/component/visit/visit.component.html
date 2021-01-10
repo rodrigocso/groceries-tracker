@@ -1,12 +1,42 @@
 <mat-card>
-  <form>
-    <mat-form-field>
-      <input matInput placeholder="Product" type="text" [formControl]="item" [matAutocomplete]="auto">
-      <mat-autocomplete #auto="matAutocomplete">
-        <mat-option *ngFor="let i of items$ | async" [value]="i">
-          {{ i.product.name }}
-        </mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
+  <form fxLayout="column" fxLayoutGap="20px">
+    <div fxLayout="row" fxLayoutGap="30px">
+      <div fxFlex="calc(50% - 30px)">
+        <mat-form-field>
+          <mat-label>When was the visit?</mat-label>
+          <input matInput [matDatepicker]="picker" [formControl]="transactionDateCtrl">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div fxFlex="calc(50% - 30px)">
+        <mat-form-field>
+          <input matInput
+                 type="text"
+                 placeholder="Store"
+                 [formControl]="storeCtrl"
+                 [matAutocomplete]="storeAutocomplete">
+          <mat-autocomplete #storeAutocomplete="matAutocomplete" [displayWith]="getStoreName">
+            <mat-option *ngFor="let store of stores$ | async" [value]="store">
+              {{ store.name }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>  
+      </div>
+    </div>
+    <div>
+      <app-search-selector [fetchFn]="getFetchItemsFn()">
+        <div *appSearchDisplay="let item">
+          <div class="brand-name">{{ item.product.brand.name }}</div>
+          <div class="product-name">{{ item.product.name }}</div>
+          <div>{{ item.packageSize }}{{ item.unit }}</div>
+        </div>
+      </app-search-selector>
+    </div>
   </form>
+  <mat-list>
+    <mat-list-item *ngFor="let p of purchases$ | async">
+      {{ p.item.product.name }} - {{ p.quantity }} * {{ p.price }}
+    </mat-list-item>
+  </mat-list>
 </mat-card>
