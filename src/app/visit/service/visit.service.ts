@@ -6,7 +6,6 @@ import * as moment from 'moment';
 import { Item } from '../../core/model/item';
 import { Purchase } from '../../core/model/purchase';
 import { Store } from '../../core/model/store';
-import { map } from 'rxjs/operators';
 
 @Injectable()
 export class VisitService {

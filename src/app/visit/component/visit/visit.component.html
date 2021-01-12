@@ -12,24 +12,34 @@
       <div fxFlex="calc(50% - 30px)">
         <app-search-selector label="Store" [fetchFn]="getFetchStoresFn()" [formControl]="storeCtrl">
           <div *appSearchDisplay="let store">
-            <div class="product-name">{{ store.name }}</div>
-            <div class="brand-name">{{ store.city }}</div>
+            <div class="primary-info">{{ store.name }}</div>
+            <div class="secondary-info">{{ store.city }}</div>
           </div>
         </app-search-selector>
       </div>
     </div>
     <div>
-      <app-search-selector label="Product" [fetchFn]="getFetchItemsFn()" [formControl]="itemCtrl">
+      <app-search-selector label="Product" [fetchFn]="getFetchItemsFn()" [formControl]="itemCtrl" fxFlex="1 1 100">
         <div *appSearchDisplay="let item">
-          <div class="product-name">{{ item.product.name }}</div>
-          <div class="brand-name">{{ item.product.brand?.name || 'Unbranded' }} | {{ item.packageSize }}{{ item.unit }}</div>
+          <div class="primary-info">{{ item.product.name }}</div>
+          <div class="secondary-info">{{ item.product.brand?.name || 'Unbranded' }} | {{ item.packageSize }}{{ item.unit }}</div>
         </div>
       </app-search-selector>
     </div>
   </form>
   <mat-list>
     <mat-list-item *ngFor="let p of purchases$ | async">
-      {{ p.item.product.name }} - {{ p.quantity }} * {{ p.price }}
+      <div>
+        <div class="primary-info">{{ p.item.product.name }}</div>
+        <div class="secondary-info">{{ p.item.product.name || 'Unbranded' }} | {{ p.item.packageSize }}{{ p.item.unit }}</div>
+      </div>
+      <div>
+        {{ p.quantity }}
+      </div>
+      <mat-icon>close</mat-icon>
+      <div>
+        {{ p.price | currency: 'EUR' }}
+      </div>
     </mat-list-item>
   </mat-list>
 </mat-card>

@@ -17,6 +17,9 @@
            type="text"
            [formControl]="inputCtrl"
            [matAutocomplete]="optionAutocomplete">
+    <button matSuffix mat-icon-button color="primary">
+      <mat-icon>add</mat-icon>
+    </button>
     <mat-autocomplete class="custom-autocomplete" #optionAutocomplete="matAutocomplete" (optionSelected)="writeValue($event.option.value)">
       <mat-option *ngFor="let option of searchResults$ | async" [value]="option">
         <ng-container *ngTemplateOutlet="searchDisplayTemplate || defaultDisplay; context: {$implicit: option}">
