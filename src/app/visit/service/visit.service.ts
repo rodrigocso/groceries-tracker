@@ -13,10 +13,7 @@ export class VisitService {
   constructor(private http: HttpClient) { }
   
   findProductsByNameOrBrand(query: string): Observable<Item[]> {
-    return this.http.get<Item[]>(`http://localhost:8080/items/search?brandOrProductName=${query}`)
-      .pipe(
-        map((items: Item[]) => items.map(item => new Item(item)))
-      );
+    return this.http.get<Item[]>(`http://localhost:8080/items/search?brandOrProductName=${query}`);
   }
 
   findStoresByName(query: string): Observable<Store[]> {

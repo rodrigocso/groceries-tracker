@@ -1,8 +1,8 @@
 <mat-card>
-  <form fxLayout="column" fxLayoutGap="20px">
+  <form fxLayout="column" fxLayoutGap="20px" [formGroup]="form">
     <div fxLayout="row" fxLayoutGap="30px">
       <div fxFlex="calc(50% - 30px)">
-        <mat-form-field>
+        <mat-form-field appearance="fill">
           <mat-label>When was the visit?</mat-label>
           <input matInput [matDatepicker]="picker" [formControl]="transactionDateCtrl">
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -10,26 +10,19 @@
         </mat-form-field>
       </div>
       <div fxFlex="calc(50% - 30px)">
-        <mat-form-field>
-          <input matInput
-                 type="text"
-                 placeholder="Store"
-                 [formControl]="storeCtrl"
-                 [matAutocomplete]="storeAutocomplete">
-          <mat-autocomplete #storeAutocomplete="matAutocomplete" [displayWith]="getStoreName">
-            <mat-option *ngFor="let store of stores$ | async" [value]="store">
-              {{ store.name }}
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>  
+        <app-search-selector label="Store" [fetchFn]="getFetchStoresFn()" [formControl]="storeCtrl">
+          <div *appSearchDisplay="let store">
+            <div class="product-name">{{ store.name }}</div>
+            <div class="brand-name">{{ store.city }}</div>
+          </div>
+        </app-search-selector>
       </div>
     </div>
     <div>
-      <app-search-selector [fetchFn]="getFetchItemsFn()">
+      <app-search-selector label="Product" [fetchFn]="getFetchItemsFn()" [formControl]="itemCtrl">
         <div *appSearchDisplay="let item">
-          <div class="brand-name">{{ item.product.brand.name }}</div>
           <div class="product-name">{{ item.product.name }}</div>
-          <div>{{ item.packageSize }}{{ item.unit }}</div>
+          <div class="brand-name">{{ item.product.brand?.name || 'Unbranded' }} | {{ item.packageSize }}{{ item.unit }}</div>
         </div>
       </app-search-selector>
     </div>
