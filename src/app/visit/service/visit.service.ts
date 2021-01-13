@@ -20,6 +20,6 @@ export class VisitService {
   }
 
   findPurchasesByStoreAndDate(storeId: number, date: moment.Moment): Observable<Purchase[]> {
-    return this.http.get<Purchase[]>(`http://localhost:8080/purchases/${storeId}/${date.format('yyyyMMDD')}`);
+    return this.http.get<Purchase[]>(`http://localhost:8080/purchases/store/${storeId}/${date.format('yyyyMMDD')}`);
   }
 }
