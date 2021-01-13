@@ -43,7 +43,8 @@ export class SearchSelectorComponent implements OnInit, OnDestroy, ControlValueA
         distinctUntilChanged(),
         filter(value => typeof value === 'string'),
         takeUntil(this.componentDestroyed$)
-      ).subscribe(query => {
+      )
+      .subscribe(query => {
         this.searchResults$ = this.fetchFn(query);
       })
   }

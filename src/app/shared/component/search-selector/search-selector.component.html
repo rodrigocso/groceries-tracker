@@ -1,14 +1,15 @@
 <div *ngIf="value; then displaySelectedOption else selectOption"></div>
 <ng-template #displaySelectedOption>
-  <div class="selected" fxLayout="row" fxLayoutAlign="start stretch">
-    <div class="close" (click)="value = undefined" fxLayoutAlign="center center">
+  <mat-form-field appearance="fill" floatLabel="always">
+    <mat-label>Secondary text</mat-label>
+    <input matInput
+           type="text"
+           value="Primary text"
+           readonly>
+    <button matSuffix mat-icon-button color="warn" (click)="value = null">
       <mat-icon>close</mat-icon>
-    </div>
-    <div class="selected-details" fxFlex="1 1 100">
-      <ng-container *ngTemplateOutlet="searchDisplayTemplate || defaultDisplay; context: {$implicit: value}">
-      </ng-container>
-    </div>
-  </div>
+    </button>
+  </mat-form-field>
 </ng-template>
 <ng-template #selectOption>
   <mat-form-field appearance="fill">
