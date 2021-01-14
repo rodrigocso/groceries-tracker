@@ -1,35 +1,33 @@
-<div *ngIf="value; then displaySelectedOption else selectOption"></div>
-<ng-template #displaySelectedOption>
-  <mat-form-field appearance="fill" floatLabel="always">
-    <mat-label>Secondary text</mat-label>
-    <input matInput
-           type="text"
-           value="Primary text"
-           readonly>
-    <button matSuffix mat-icon-button color="warn" (click)="value = null">
-      <mat-icon>close</mat-icon>
-    </button>
-  </mat-form-field>
-</ng-template>
-<ng-template #selectOption>
-  <mat-form-field appearance="fill">
-    <input matInput
-           [placeholder]="label"
-           type="text"
-           [formControl]="inputCtrl"
-           [matAutocomplete]="optionAutocomplete">
-    <button matSuffix mat-icon-button color="primary">
-      <mat-icon>add</mat-icon>
-    </button>
-    <mat-autocomplete class="custom-autocomplete" #optionAutocomplete="matAutocomplete" (optionSelected)="writeValue($event.option.value)">
-      <mat-option *ngFor="let option of searchResults$ | async" [value]="option">
-        <ng-container *ngTemplateOutlet="searchDisplayTemplate || defaultDisplay; context: {$implicit: option}">
-        </ng-container>
-      </mat-option>
-    </mat-autocomplete>
-  </mat-form-field>
-</ng-template>
-
-<ng-template #defaultDisplay>
-  {{ value }}
-</ng-template>
+<main class="search-selector">
+  <div *ngIf="value; then displaySelectedOption else selectOption"></div>
+  <ng-template #displaySelectedOption>
+    <mat-form-field appearance="fill" floatLabel="always">
+      <mat-label>{{ secondaryTextFn(value) }}</mat-label>
+      <input matInput
+             type="text"
+             [value]="primaryTextFn(value)"
+             readonly>
+      <button matSuffix mat-icon-button color="warn" (click)="writeValue(null)">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </ng-template>
+  <ng-template #selectOption>
+    <mat-form-field appearance="fill">
+      <input matInput
+             [placeholder]="label"
+             type="text"
+             [formControl]="inputCtrl"
+             [matAutocomplete]="optionAutocomplete">
+      <button matSuffix mat-icon-button color="primary">
+        <mat-icon>add</mat-icon>
+      </button>
+      <mat-autocomplete class="custom-autocomplete" #optionAutocomplete="matAutocomplete" (optionSelected)="writeValue($event.option.value)">
+        <mat-option *ngFor="let option of searchResults$ | async" [value]="option">
+          <div class="ss-primary">{{ primaryTextFn(option) }}</div>
+          <div class="ss-secondary">{{ secondaryTextFn(option) }}</div>
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </ng-template>
+</main>

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl } from '@angular/forms';
 import { combineLatest, EMPTY, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import * as moment from 'moment';
 
 import { Item } from '../../../core/model/item';
@@ -30,6 +30,30 @@ export class VisitComponent implements OnDestroy, OnInit {
 
   constructor(private visitService: VisitService, private fb: FormBuilder) { }
 
+  get fetchItemsFn(): (query: string) => Observable<Item[]> {
+    return this.visitService.findProductsByNameOrBrand.bind(this.visitService);
+  }
+
+  get fetchStoresFn(): (query: string) => Observable<Store[]> {
+    return this.visitService.findStoresByName.bind(this.visitService);
+  }
+
+  get itemProductNameGetter(): (item: Item) => string {
+    return (item) => item.product.name;
+  }
+
+  get itemDetailsGetter(): (item: Item) => string {
+    return (item) => `${item.product.brand?.name || 'Unbranded'} | ${item.packageSize}${item.unit}`;
+  }
+
+  get storeNameGetter(): (store: Store) => string {
+    return (store) => store.name;
+  }
+
+  get storeCityGetter(): (store: Store) => string {
+    return (store) => store.city;
+  }
+
   ngOnInit(): void {
     this.transactionDateCtrl.setValidators((control: AbstractControl): {[key: string]: any} | null => 
       !control.value || moment.isMoment(control.value) ? null : {invalidDate: {value: control.value}}
@@ -37,24 +61,17 @@ export class VisitComponent implements OnDestroy, OnInit {
 
     combineLatest([this.storeCtrl.valueChanges, this.transactionDateCtrl.valueChanges])
       .pipe(
-        distinctUntilChanged((x, y) => (x[0] !== y[0]) || (x[1] !== y[1])),
         takeUntil(this.componentDestroyed$)
       )
       .subscribe((storeAndDate: [Store, moment.Moment]) => {
-        this.purchases$ = this.visitService.findPurchasesByStoreAndDate(storeAndDate[0].id, storeAndDate[1]);
+        this.purchases$ = storeAndDate[0] === null || storeAndDate[1] === null ?
+          EMPTY :
+          this.visitService.findPurchasesByStoreAndDate(storeAndDate[0].id, storeAndDate[1]);
       });
   }
 
   ngOnDestroy(): void {
     this.componentDestroyed$.next();
     this.componentDestroyed$.complete();
-  }
-
-  getFetchItemsFn(): (query: string) => Observable<Item[]> {
-    return this.visitService.findProductsByNameOrBrand.bind(this.visitService);
-  }
-
-  getFetchStoresFn(): (query: string) => Observable<Store[]> {
-    return this.visitService.findStoresByName.bind(this.visitService);
   }
 }

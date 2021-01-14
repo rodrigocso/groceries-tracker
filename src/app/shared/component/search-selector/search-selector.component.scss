@@ -9,7 +9,7 @@ mat-label {
 .custom-autocomplete {
   mat-option.mat-option {
     height: auto;
-    line-height: 24px;
+    line-height: 20px;
     padding-top: 5px;
     padding-bottom: 5px;
 
@@ -17,4 +17,14 @@ mat-label {
       border-bottom: solid 1px rgb(0, 0, 0, 0.1);
     }
   }
+}
+
+div.ss-secondary {
+  font-size: 0.75em;
+  color: rgb(0, 0, 0, 0.7);
+}
+
+div.ss-primary {
+  font-size: 0.9em;
+  font-weight: 500;
 }

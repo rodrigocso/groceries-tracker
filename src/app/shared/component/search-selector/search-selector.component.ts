@@ -1,9 +1,7 @@
-import { Component, ContentChild, forwardRef, Input, OnDestroy, OnInit, TemplateRef, ViewEncapsulation } from '@angular/core';
+import { Component, forwardRef, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { EMPTY, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
-
-import { SearchDisplayDirective } from './search-display.directive';
 
 @Component({
   selector: 'app-search-selector',
@@ -19,10 +17,10 @@ import { SearchDisplayDirective } from './search-display.directive';
   encapsulation: ViewEncapsulation.None
 })
 export class SearchSelectorComponent implements OnInit, OnDestroy, ControlValueAccessor {
-  @ContentChild(SearchDisplayDirective) searchDisplay?: SearchDisplayDirective;
-
   @Input() label: string = '';
   @Input() fetchFn: (query: string) => Observable<any[]> = () => EMPTY;
+  @Input() primaryTextFn: (value: any) => string = (value) => value;
+  @Input() secondaryTextFn: (value: any) => string = () => '';
 
   componentDestroyed$ = new Subject();
   disabled = false;
@@ -31,10 +29,6 @@ export class SearchSelectorComponent implements OnInit, OnDestroy, ControlValueA
   onTouched: any = () => {};
   searchResults$: Observable<any[]> = EMPTY;
   value?: any;
-
-  get searchDisplayTemplate(): TemplateRef<any> | undefined {
-    return this.searchDisplay?.template;
-  }
 
   ngOnInit(): void {
     this.inputCtrl.valueChanges

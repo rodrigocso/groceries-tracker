@@ -1,7 +1,7 @@
 <mat-card>
   <form fxLayout="column" fxLayoutGap="20px" [formGroup]="form">
     <div fxLayout="row" fxLayoutGap="30px">
-      <div fxFlex="calc(50% - 30px)">
+      <div fxFlex="50">
         <mat-form-field appearance="fill">
           <mat-label>When was the visit?</mat-label>
           <input matInput [matDatepicker]="picker" [formControl]="transactionDateCtrl">
@@ -9,37 +9,45 @@
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
       </div>
-      <div fxFlex="calc(50% - 30px)">
-        <app-search-selector label="Store" [fetchFn]="getFetchStoresFn()" [formControl]="storeCtrl">
-          <div *appSearchDisplay="let store">
-            <div class="primary-info">{{ store.name }}</div>
-            <div class="secondary-info">{{ store.city }}</div>
-          </div>
+      <div fxFlex="50">
+        <app-search-selector
+          label="Store"
+          [fetchFn]="fetchStoresFn"
+          [primaryTextFn]="storeNameGetter"
+          [secondaryTextFn]="storeCityGetter"
+          [formControl]="storeCtrl">
         </app-search-selector>
       </div>
     </div>
     <div>
-      <app-search-selector label="Product" [fetchFn]="getFetchItemsFn()" [formControl]="itemCtrl" fxFlex="1 1 100">
-        <div *appSearchDisplay="let item">
-          <div class="primary-info">{{ item.product.name }}</div>
-          <div class="secondary-info">{{ item.product.brand?.name || 'Unbranded' }} | {{ item.packageSize }}{{ item.unit }}</div>
-        </div>
+      <app-search-selector fxFlex="1 1 100"
+        label="Product"
+        [fetchFn]="fetchItemsFn"
+        [primaryTextFn]="itemProductNameGetter"
+        [secondaryTextFn]="itemDetailsGetter"
+        [formControl]="itemCtrl">
       </app-search-selector>
     </div>
   </form>
-  <mat-list>
-    <mat-list-item *ngFor="let p of purchases$ | async">
+  <section fxLayout="column" fxLayoutGap="15px">
+    <div *ngFor="let p of purchases$ | async" fxLayout="row" fxLayoutAlign="space-between center">
       <div>
-        <div class="primary-info">{{ p.item.product.name }}</div>
-        <div class="secondary-info">{{ p.item.product.name || 'Unbranded' }} | {{ p.item.packageSize }}{{ p.item.unit }}</div>
+        <div class="primary-info">
+          {{ p.item.product.name }}
+        </div>
+        <div class="secondary-info">
+          {{ p.item.product.brand?.name || 'Unbranded' }} | {{ p.item.packageSize }}{{ p.item.unit }}
+        </div>
       </div>
-      <div>
-        {{ p.quantity }}
+      <div class="connector" fxFlex="1 1 100"></div>
+      <div fxLayout="column" fxLayoutAlign="center end">
+        <div class="price">
+          {{ p.price | currency: 'EUR' }}
+        </div>
+        <div class="quantity">
+          Qty: {{ p.quantity }}
+        </div>
       </div>
-      <mat-icon>close</mat-icon>
-      <div>
-        {{ p.price | currency: 'EUR' }}
-      </div>
-    </mat-list-item>
-  </mat-list>
+    </div>
+  </section>
 </mat-card>

@@ -1,8 +1,33 @@
-div.secondary-info {
-  font-size: 0.85em;
-  color: rgb(0, 0, 0, 0.7);
+section {
+  background-color: rgba(0, 0, 0, 0.04);
+  border-radius: 5px;
+  padding: 20px;
 }
 
 div.primary-info {
-  font-weight: 600;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+div.secondary-info {
+  color: rgb(0, 0, 0, 0.7);
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+div.connector {
+  border-top: dotted 1px rgba(0, 0, 0, 0.3);
+  margin: 0 30px;
+}
+
+div.quantity {
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 0.8em;
+  white-space: nowrap;
+}
+
+div.price {
+  font-size: 1.2em;
+  font-weight: 500;
+  white-space: nowrap;
 }

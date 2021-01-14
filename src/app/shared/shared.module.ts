@@ -5,12 +5,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { MaterialModule } from './material.module';
 import { SearchSelectorComponent } from './component/search-selector/search-selector.component';
-import { SearchDisplayDirective } from './component/search-selector/search-display.directive';
 
 @NgModule({
   declarations: [
-    SearchSelectorComponent,
-    SearchDisplayDirective
+    SearchSelectorComponent
   ],
   imports: [
     CommonModule,
@@ -25,8 +23,7 @@ import { SearchDisplayDirective } from './component/search-selector/search-displ
     FormsModule,
     ReactiveFormsModule,
     MaterialModule,
-    SearchSelectorComponent,
-    SearchDisplayDirective
+    SearchSelectorComponent
   ]
 })
 export class SharedModule { }
