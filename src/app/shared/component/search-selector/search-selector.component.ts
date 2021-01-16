@@ -1,4 +1,4 @@
-import { Component, forwardRef, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, forwardRef, Input, OnDestroy, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { EMPTY, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
@@ -17,13 +17,15 @@ import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/oper
   encapsulation: ViewEncapsulation.None
 })
 export class SearchSelectorComponent implements OnInit, OnDestroy, ControlValueAccessor {
-  @Input() label: string = '';
+  @Input() label = '';
   @Input() fetchFn: (query: string) => Observable<any[]> = () => EMPTY;
   @Input() primaryTextFn: (value: any) => string = (value) => value;
-  @Input() secondaryTextFn: (value: any) => string = () => '';
+  @Input() secondaryTextFn?: (value: any) => string;
+
+  @Output() addClick = new EventEmitter<string>();
 
   componentDestroyed$ = new Subject();
-  disabled = false;
+  hasSecondaryText = false;
   inputCtrl = new FormControl();
   onChange: any = () => {};
   onTouched: any = () => {};
@@ -31,6 +33,7 @@ export class SearchSelectorComponent implements OnInit, OnDestroy, ControlValueA
   value?: any;
 
   ngOnInit(): void {
+    this.hasSecondaryText = this.secondaryTextFn !== undefined;
     this.inputCtrl.valueChanges
       .pipe(
         debounceTime(300),
@@ -39,13 +42,21 @@ export class SearchSelectorComponent implements OnInit, OnDestroy, ControlValueA
         takeUntil(this.componentDestroyed$)
       )
       .subscribe(query => {
-        this.searchResults$ = this.fetchFn(query);
+        if (!query) {
+          this.searchResults$ = EMPTY;
+        } else {
+          this.searchResults$ = this.fetchFn(query);
+        }
       })
   }
 
   ngOnDestroy(): void {
     this.componentDestroyed$.next();
     this.componentDestroyed$.complete();
+  }
+
+  getSecondaryText(value: any): string | null {
+    return this.secondaryTextFn ? this.secondaryTextFn(value) : null;
   }
 
   writeValue(obj: any): void {
@@ -63,7 +74,11 @@ export class SearchSelectorComponent implements OnInit, OnDestroy, ControlValueA
     this.onTouched = fn;
   }
   
-  setDisabledState?(isDisabled: boolean): void {
-    this.disabled = isDisabled;
- }
+  setDisabledState(isDisabled: boolean): void {
+    if (isDisabled) {
+      this.inputCtrl.disable();
+    } else {
+      this.inputCtrl.enable();
+    }
+  }
 }

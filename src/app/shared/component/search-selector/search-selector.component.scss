@@ -19,12 +19,18 @@ mat-label {
   }
 }
 
+div.ss-primary {
+  font-size: 0.9em;
+  font-weight: 500;
+  
+  &.extended {
+    padding-top: 10px;
+    padding-bottom: 10px;   
+  }
+}
+
 div.ss-secondary {
   font-size: 0.75em;
   color: rgb(0, 0, 0, 0.7);
 }
 
-div.ss-primary {
-  font-size: 0.9em;
-  font-weight: 500;
-}
