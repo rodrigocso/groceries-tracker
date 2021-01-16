@@ -19,8 +19,11 @@
              [placeholder]="label"
              [formControl]="inputCtrl"
              [matAutocomplete]="optionAutocomplete">
-      <button type="button" matSuffix mat-icon-button color="primary" (click)="addClick.emit(inputCtrl.value)" [disabled]="!inputCtrl.value">
-        <mat-icon>add</mat-icon>
+      <button *ngIf="action == 'save'" type="button" matSuffix mat-icon-button color="primary" (click)="addClick.emit(inputCtrl.value)" [disabled]="!inputCtrl.value">
+        <mat-icon>save_alt</mat-icon>
+      </button>
+      <button *ngIf="action == 'new'" type="button" matSuffix mat-icon-button color="primary" (click)="addClick.emit(inputCtrl.value)">
+        <mat-icon>launch</mat-icon>
       </button>
       <mat-autocomplete class="custom-autocomplete" #optionAutocomplete="matAutocomplete" (optionSelected)="writeValue($event.option.value)">
         <mat-option *ngFor="let option of searchResults$ | async" [value]="option">

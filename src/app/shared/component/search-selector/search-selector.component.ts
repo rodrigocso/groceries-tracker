@@ -17,6 +17,7 @@ import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/oper
   encapsulation: ViewEncapsulation.None
 })
 export class SearchSelectorComponent implements OnInit, OnDestroy, ControlValueAccessor {
+  @Input() action?: "new" | "save";
   @Input() alwaysShowLabel = false;
   @Input() label = '';
   @Input() fetchFn: (query: string) => Observable<any[]> = () => EMPTY;

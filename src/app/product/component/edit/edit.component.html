@@ -1,6 +1,7 @@
 <mat-card fxLayout="column" fxLayoutGap="20px">
   <form fxLayout="column" fxLayoutGap="20px">
     <app-search-selector
+      action="save"
       [alwaysShowLabel]="true"
       label="Brand"
       [fetchFn]="fetchBrandsFn"
@@ -9,6 +10,7 @@
       (addClick)="onAddBrandClicked($event)">
     </app-search-selector>
     <app-search-selector
+      action="save"
       [alwaysShowLabel]="true"
       label="Product"
       [fetchFn]="fetchProductsFn"
@@ -30,13 +32,17 @@
                matInput
                [formControl]="unitCtrl"
                [matAutocomplete]="auto">
-        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+        <mat-autocomplete #auto="matAutocomplete">
           <mat-option *ngFor="let u of units" [value]="u">
             {{ u }}
           </mat-option>
         </mat-autocomplete>
       </mat-form-field>
-      <button type="button" class="inline-form" mat-raised-button color="primary" fxFlex="calc(100% / 3 - 20px)">
+      <button type="button"
+              class="inline-form"
+              mat-raised-button
+              color="primary"
+              fxFlex="calc(100% / 3 - 20px)">
         Add Packaging
       </button>
     </div>
