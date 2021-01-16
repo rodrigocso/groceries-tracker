@@ -1,0 +1,47 @@
+<mat-card fxLayout="column" fxLayoutGap="20px">
+  <form fxLayout="column" fxLayoutGap="20px">
+    <app-search-selector
+      label="Brand"
+      [fetchFn]="fetchBrandsFn"
+      [primaryTextFn]="brandNameGetter"
+      [formControl]="brandCtrl"
+      (addClick)="onAddBrandClicked($event)">
+    </app-search-selector>
+    <app-search-selector
+      label="Product"
+      [fetchFn]="fetchProductsFn"
+      [primaryTextFn]="productNameGetter"
+      [secondaryTextFn]="productBrandNameGetter"
+      [formControl]="productCtrl"
+      (addClick)="onAddProductClicked($event)">
+    </app-search-selector>
+  </form>
+  <section fxLayout="row" fxLayoutGap="20px">
+    <mat-card fxFlex="30">
+      <h3>Packaging</h3>
+      <mat-list>
+        <mat-list-item>250g</mat-list-item>
+        <mat-list-item>500g</mat-list-item>
+        <mat-list-item>750g</mat-list-item>
+      </mat-list>
+    </mat-card>
+    <div fxFlex="70">
+      <mat-form-field appearance="fill">
+        <mat-label>Size</mat-label>
+        <input matInput type="number" [formControl]="packageSizeCtrl">
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Unit</mat-label>
+        <input type="text"
+               matInput
+               [formControl]="unitCtrl"
+               [matAutocomplete]="auto">
+        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+          <mat-option *ngFor="let u of units" [value]="u">
+            {{ u }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+  </section>
+</mat-card>
