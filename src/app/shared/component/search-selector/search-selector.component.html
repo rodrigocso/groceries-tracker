@@ -2,7 +2,7 @@
   <div *ngIf="value; then displaySelectedOption else selectOption"></div>
   <ng-template #displaySelectedOption>
     <mat-form-field appearance="fill" floatLabel="always">
-      <mat-label>{{ getSecondaryText(value) }}</mat-label>
+      <mat-label>{{ alwaysShowLabel ? label : getSecondaryText(value) }}</mat-label>
       <input matInput
              type="text"
              [value]="primaryTextFn(value)"
