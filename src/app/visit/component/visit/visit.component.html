@@ -1,4 +1,4 @@
-<mat-card>
+<mat-card fxLayout="column" fxLayoutGap="20px">
   <form fxLayout="column" fxLayoutGap="20px" [formGroup]="form">
     <div fxLayout="row" fxLayoutGap="30px">
       <div fxFlex="50">
@@ -25,7 +25,8 @@
         [fetchFn]="fetchItemsFn"
         [primaryTextFn]="itemProductNameGetter"
         [secondaryTextFn]="itemDetailsGetter"
-        [formControl]="itemCtrl">
+        [formControl]="itemCtrl"
+        (addClick)="navigateToNewProduct()">
       </app-search-selector>
     </div>
   </form>

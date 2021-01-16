@@ -8,6 +8,7 @@ import { Item } from '../../../core/model/item';
 import { Purchase } from '../../../core/model/purchase';
 import { Store } from '../../../core/model/store';
 import { VisitService } from '../../service/visit.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-visit',
@@ -28,7 +29,7 @@ export class VisitComponent implements OnDestroy, OnInit {
     item: this.itemCtrl
   });
 
-  constructor(private visitService: VisitService, private fb: FormBuilder) { }
+  constructor(private visitService: VisitService, private fb: FormBuilder, private router: Router) { }
 
   get fetchItemsFn(): (query: string) => Observable<Item[]> {
     return this.visitService.findProductsByNameOrBrand.bind(this.visitService);
@@ -39,11 +40,11 @@ export class VisitComponent implements OnDestroy, OnInit {
   }
 
   get itemProductNameGetter(): (item: Item) => string {
-    return (item) => item.product.name;
+    return (item) => item?.product.name;
   }
 
   get itemDetailsGetter(): (item: Item) => string {
-    return (item) => `${item.product.brand?.name || 'Unbranded'} | ${item.packageSize}${item.unit}`;
+    return (item) => `${item?.product.brand?.name || 'Unbranded'} | ${item?.packageSize}${item?.unit}`;
   }
 
   get storeNameGetter(): (store: Store) => string {
@@ -73,5 +74,9 @@ export class VisitComponent implements OnDestroy, OnInit {
   ngOnDestroy(): void {
     this.componentDestroyed$.next();
     this.componentDestroyed$.complete();
+  }
+
+  navigateToNewProduct(): void {
+    this.router.navigate(['/product']);
   }
 }
