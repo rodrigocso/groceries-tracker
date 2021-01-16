@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { EMPTY, Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, tap } from 'rxjs/operators';
 
 import { Brand } from '../../../core/model/brand';
 import { ItemDto } from '../../../core/model/item';
@@ -17,24 +17,22 @@ import { ProductService } from '../../service/product.service';
 export class EditComponent implements OnInit, OnDestroy {
   componentDestroyed$ = new Subject();
 
-  brandCtrl = new FormControl();
-  productCtrl = new FormControl();
-  packageSizeCtrl = new FormControl();
-  unitCtrl = new FormControl();
+  brandCtrl = new FormControl(null, Validators.required);
+  productCtrl = new FormControl(null, Validators.required);
+  packageSizeCtrl = new FormControl(null, Validators.required);
+  unitCtrl = new FormControl(null, Validators.required);
 
   items$: Observable<ItemDto[]> = EMPTY;
-  units = ['g', 'kg', 'cL', 'mL', 'un', 'L'];
+  units = ['g', 'kg', 'mL', 'cL', 'L', 'un'];
 
-  form = this.fb.group({
-    id: null,
-    product: this.fb.group({
-      id: null,
-      brand: this.fb.group({
-        id: null,
-        name: this.brandCtrl
-      }),
-      name: this.productCtrl
-    }),
+  productForm = this.fb.group({
+    id: [null, Validators.required],
+    name: [null, Validators.required],
+    brandId: [null, Validators.required]
+  });
+
+  itemForm = this.fb.group({
+    productId: [null, Validators.required],
     packageSize: this.packageSizeCtrl,
     unit: this.unitCtrl
   });
@@ -67,24 +65,41 @@ export class EditComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.productCtrl.disable();
-    this.brandCtrl.valueChanges
+    this.itemForm.disable();
+
+    this.brandCtrl.statusChanges
       .pipe(takeUntil(this.componentDestroyed$))
-      .subscribe(brand => {
-        if (!brand) {
-          this.productCtrl.disable();
+      .subscribe(() => {
+        if (this.brandCtrl.valid) {
+          this.productForm.patchValue({ brandId: this.brandCtrl.value.id });
+          this.productCtrl.enable({ emitEvent: false });
         } else {
-          this.productCtrl.enable();
+          this.productCtrl.reset();
+          this.productCtrl.disable({ emitEvent: false });
         }
       });
+
     this.productCtrl.valueChanges
       .pipe(takeUntil(this.componentDestroyed$))
       .subscribe((product: Product) => {
         if (product?.id) {
-          this.items$ = this.itemService.findItemsByProduct(product.id);
+          this.productForm.patchValue(product);
+          this.itemForm.patchValue({ productId: product.id });
+          this.items$ = this.itemService.findItemsByProduct(product.id)
+            .pipe(
+              tap(items => this.unitCtrl.setValue(items?.[0]?.unit))
+            );
         } else {
           this.items$ = EMPTY;
+          this.unitCtrl.reset();
+          this.productForm.reset();
+          this.productForm.patchValue({ brand: this.brandCtrl.value || {} });
         }
       });
+    
+    this.productForm.statusChanges
+      .pipe(takeUntil(this.componentDestroyed$))
+      .subscribe(() => this.productForm.valid ? this.itemForm.enable() : this.itemForm.disable());
   }
 
   ngOnDestroy(): void {
@@ -96,8 +111,18 @@ export class EditComponent implements OnInit, OnDestroy {
     this.brandService.addOne({ name }).subscribe(brand => this.brandCtrl.setValue(brand));
   }
 
+  onAddPackagingClick(): void {
+    this.itemService.addOne(this.itemForm.value)
+      .subscribe(item => this.items$ = this.itemService.findItemsByProduct(item.productId));
+    this.packageSizeCtrl.reset();
+  }
+
   onAddProductClicked(name: string): void {
-    this.productService.addOne({ brand: this.brandCtrl.value, name: name })
-      .subscribe(product => this.productCtrl.setValue(product));
+    this.productForm.patchValue({ name });
+    this.productService.addOne(this.productForm.value)
+      .subscribe(product => {
+        this.productForm.patchValue(product);
+        this.productCtrl.setValue(product);
+      });
   }
 }

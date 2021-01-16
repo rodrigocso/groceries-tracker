@@ -5,3 +5,9 @@ export interface Product {
   name: string;
   brand: Brand;
 }
+
+export interface ProductDto {
+  id?: number;
+  name: string;
+  brandId: number;
+}

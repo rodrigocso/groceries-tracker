@@ -7,7 +7,7 @@
       [fetchFn]="fetchBrandsFn"
       [primaryTextFn]="brandNameGetter"
       [formControl]="brandCtrl"
-      (addClick)="onAddBrandClicked($event)">
+      (actionClick)="onAddBrandClicked($event)">
     </app-search-selector>
     <app-search-selector
       action="save"
@@ -17,11 +17,11 @@
       [primaryTextFn]="productNameGetter"
       [secondaryTextFn]="productBrandNameGetter"
       [formControl]="productCtrl"
-      (addClick)="onAddProductClicked($event)">
+      (actionClick)="onAddProductClicked($event)">
     </app-search-selector>
   </form>
   <section fxLayout="column" fxLayoutGap="20px">
-    <div fxLayout="row" fxLayoutGap="20px">
+    <form fxLayout="row" fxLayoutGap="20px">
       <mat-form-field appearance="fill" fxFlex="calc(100% / 3 - 20px)">
         <mat-label>Size</mat-label>
         <input matInput type="number" [formControl]="packageSizeCtrl">
@@ -40,12 +40,14 @@
       </mat-form-field>
       <button type="button"
               class="inline-form"
-              mat-raised-button
+              mat-flat-button
               color="primary"
-              fxFlex="calc(100% / 3 - 20px)">
+              fxFlex="calc(100% / 3 - 20px)"
+              [disabled]="!itemForm.valid"
+              (click)="onAddPackagingClick()">
         Add Packaging
       </button>
-    </div>
+    </form>
     <mat-form-field appearance="fill">
       <mat-label>Available Packaging</mat-label>
       <mat-chip-list #chipList>
