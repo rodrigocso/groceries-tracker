@@ -19,12 +19,13 @@ import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/oper
 export class SearchSelectorComponent implements OnInit, OnDestroy, ControlValueAccessor {
   @Input() action?: "new" | "save";
   @Input() alwaysShowLabel = false;
+  @Input() formControl = new FormControl();
   @Input() label = '';
   @Input() fetchFn: (query: string) => Observable<any[]> = () => EMPTY;
   @Input() primaryTextFn: (value: any) => string = (value) => value;
   @Input() secondaryTextFn?: (value: any) => string;
 
-  @Output() addClick = new EventEmitter<string>();
+  @Output() actionClick = new EventEmitter<string>();
 
   componentDestroyed$ = new Subject();
   hasSecondaryText = false;
@@ -36,6 +37,7 @@ export class SearchSelectorComponent implements OnInit, OnDestroy, ControlValueA
 
   ngOnInit(): void {
     this.hasSecondaryText = this.secondaryTextFn !== undefined;
+    this.inputCtrl.setValidators(this.formControl.validator);
     this.inputCtrl.valueChanges
       .pipe(
         debounceTime(300),

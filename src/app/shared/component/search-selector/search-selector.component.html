@@ -19,10 +19,10 @@
              [placeholder]="label"
              [formControl]="inputCtrl"
              [matAutocomplete]="optionAutocomplete">
-      <button *ngIf="action == 'save'" type="button" matSuffix mat-icon-button color="primary" (click)="addClick.emit(inputCtrl.value)" [disabled]="!inputCtrl.value">
+      <button *ngIf="action == 'save'" type="button" matSuffix mat-icon-button color="primary" (click)="actionClick.emit(inputCtrl.value)" [disabled]="!inputCtrl.value">
         <mat-icon>save_alt</mat-icon>
       </button>
-      <button *ngIf="action == 'new'" type="button" matSuffix mat-icon-button color="primary" (click)="addClick.emit(inputCtrl.value)">
+      <button *ngIf="action == 'new'" type="button" matSuffix mat-icon-button color="primary" (click)="actionClick.emit()">
         <mat-icon>launch</mat-icon>
       </button>
       <mat-autocomplete class="custom-autocomplete" #optionAutocomplete="matAutocomplete" (optionSelected)="writeValue($event.option.value)">
