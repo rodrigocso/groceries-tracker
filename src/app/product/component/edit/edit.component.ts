@@ -1,11 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
-import { Observable, Subject } from 'rxjs';
+import { EMPTY, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { Brand } from '../../../core/model/brand';
+import { ItemDto } from '../../../core/model/item';
 import { Product } from '../../../core/model/product';
 import { BrandService } from '../../service/brand.service';
+import { ItemService } from '../../service/item.service';
 import { ProductService } from '../../service/product.service';
 
 @Component({
@@ -19,6 +21,8 @@ export class EditComponent implements OnInit, OnDestroy {
   productCtrl = new FormControl();
   packageSizeCtrl = new FormControl();
   unitCtrl = new FormControl();
+
+  items$: Observable<ItemDto[]> = EMPTY;
   units = ['g', 'kg', 'cL', 'mL', 'un', 'L'];
 
   form = this.fb.group({
@@ -38,6 +42,7 @@ export class EditComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private brandService: BrandService,
+    private itemService: ItemService,
     private productService: ProductService) { }
 
   get fetchBrandsFn(): (query: string) => Observable<Brand[]> {
@@ -69,6 +74,15 @@ export class EditComponent implements OnInit, OnDestroy {
           this.productCtrl.disable();
         } else {
           this.productCtrl.enable();
+        }
+      });
+    this.productCtrl.valueChanges
+      .pipe(takeUntil(this.componentDestroyed$))
+      .subscribe((product: Product) => {
+        if (product?.id) {
+          this.items$ = this.itemService.findItemsByProduct(product.id);
+        } else {
+          this.items$ = EMPTY;
         }
       });
   }

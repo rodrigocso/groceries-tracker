@@ -1,6 +1,7 @@
 <mat-card fxLayout="column" fxLayoutGap="20px">
   <form fxLayout="column" fxLayoutGap="20px">
     <app-search-selector
+      [alwaysShowLabel]="true"
       label="Brand"
       [fetchFn]="fetchBrandsFn"
       [primaryTextFn]="brandNameGetter"
@@ -8,6 +9,7 @@
       (addClick)="onAddBrandClicked($event)">
     </app-search-selector>
     <app-search-selector
+      [alwaysShowLabel]="true"
       label="Product"
       [fetchFn]="fetchProductsFn"
       [primaryTextFn]="productNameGetter"
@@ -16,21 +18,13 @@
       (addClick)="onAddProductClicked($event)">
     </app-search-selector>
   </form>
-  <section fxLayout="row" fxLayoutGap="20px">
-    <mat-card fxFlex="30">
-      <h3>Packaging</h3>
-      <mat-list>
-        <mat-list-item>250g</mat-list-item>
-        <mat-list-item>500g</mat-list-item>
-        <mat-list-item>750g</mat-list-item>
-      </mat-list>
-    </mat-card>
-    <div fxFlex="70">
-      <mat-form-field appearance="fill">
+  <section fxLayout="column" fxLayoutGap="20px">
+    <div fxLayout="row" fxLayoutGap="20px">
+      <mat-form-field appearance="fill" fxFlex="calc(100% / 3 - 20px)">
         <mat-label>Size</mat-label>
         <input matInput type="number" [formControl]="packageSizeCtrl">
       </mat-form-field>
-      <mat-form-field appearance="fill">
+      <mat-form-field appearance="fill" fxFlex="calc(100% / 3 - 20px)">
         <mat-label>Unit</mat-label>
         <input type="text"
                matInput
@@ -42,6 +36,18 @@
           </mat-option>
         </mat-autocomplete>
       </mat-form-field>
+      <button type="button" class="inline-form" mat-raised-button color="primary" fxFlex="calc(100% / 3 - 20px)">
+        Add Packaging
+      </button>
     </div>
+    <mat-form-field appearance="fill">
+      <mat-label>Available Packaging</mat-label>
+      <mat-chip-list #chipList>
+        <mat-chip *ngFor="let item of items$ | async">
+          {{ item.packageSize }}{{ item.unit }}
+        </mat-chip>
+        <input matInput [matChipInputFor]="chipList" readonly>
+      </mat-chip-list>
+    </mat-form-field>
   </section>
 </mat-card>
