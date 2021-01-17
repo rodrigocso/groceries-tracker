@@ -64,7 +64,7 @@ export class SearchSelectorComponent implements OnInit, OnDestroy, ControlValueA
   }
 
   writeValue(obj: any): void {
-    this.onChange(obj);
+    this.onChange(obj?.id || obj);
     this.value = obj;
     this.inputCtrl.reset();
     this.searchResults$ = EMPTY;
