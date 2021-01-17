@@ -106,7 +106,7 @@ export class EditComponent implements OnInit, OnDestroy {
 
   onAddBrandClicked(name: string): void {
     this.brandService.addOne({ name })
-      .subscribe(brand => this.brandCtrl.setValue(brand, { emitEvent: false }));
+      .subscribe(brand => this.brandCtrl.setValue(brand));
   }
 
   onAddPackagingClick(): void {
