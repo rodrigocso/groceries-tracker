@@ -4,10 +4,12 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { MaterialModule } from './material.module';
+import { DatePickerComponent } from './component/date-picker/date-picker.component';
 import { SearchSelectorComponent } from './component/search-selector/search-selector.component';
 
 @NgModule({
   declarations: [
+    DatePickerComponent,
     SearchSelectorComponent
   ],
   imports: [
@@ -23,6 +25,7 @@ import { SearchSelectorComponent } from './component/search-selector/search-sele
     FormsModule,
     ReactiveFormsModule,
     MaterialModule,
+    DatePickerComponent,
     SearchSelectorComponent
   ]
 })

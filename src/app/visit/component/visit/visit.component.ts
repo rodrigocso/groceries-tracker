@@ -1,8 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl } from '@angular/forms';
+import { FormBuilder, FormControl } from '@angular/forms';
 import { combineLatest, EMPTY, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import * as moment from 'moment';
 
 import { Item } from '../../../core/model/item';
 import { Purchase } from '../../../core/model/purchase';
@@ -20,13 +19,17 @@ export class VisitComponent implements OnDestroy, OnInit {
   purchases$: Observable<Purchase[]> = EMPTY;
  
   itemCtrl = new FormControl();
+  priceCtrl = new FormControl();
+  quantityCtrl = new FormControl();
   storeCtrl = new FormControl();
   transactionDateCtrl = new FormControl();
 
-  form = this.fb.group({
-    transactionDate: this.transactionDateCtrl,
-    store: this.storeCtrl,
-    item: this.itemCtrl
+  purchaseForm = this.fb.group({
+    itemId: this.itemCtrl,
+    price: this.priceCtrl,
+    quantity: this.quantityCtrl,
+    storeId: this.storeCtrl,
+    transactionDate: this.transactionDateCtrl
   });
 
   constructor(private visitService: VisitService, private fb: FormBuilder, private router: Router) { }
@@ -56,18 +59,14 @@ export class VisitComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    this.transactionDateCtrl.setValidators((control: AbstractControl): {[key: string]: any} | null => 
-      !control.value || moment.isMoment(control.value) ? null : {invalidDate: {value: control.value}}
-    );
-
     combineLatest([this.storeCtrl.valueChanges, this.transactionDateCtrl.valueChanges])
       .pipe(
         takeUntil(this.componentDestroyed$)
       )
-      .subscribe((storeAndDate: [Store, moment.Moment]) => {
-        this.purchases$ = storeAndDate[0] === null || storeAndDate[1] === null ?
+      .subscribe(([storeId, date]: [number, string]) => {
+        this.purchases$ = storeId === null || date === null ?
           EMPTY :
-          this.visitService.findPurchasesByStoreAndDate(storeAndDate[0].id, storeAndDate[1]);
+          this.visitService.findPurchasesByStoreAndDate(storeId, date);
       });
   }
 
@@ -78,5 +77,9 @@ export class VisitComponent implements OnDestroy, OnInit {
 
   navigateToNewProduct(): void {
     this.router.navigate(['/product']);
+  }
+
+  onAddPurchaseClick(): void {
+    console.log(this.purchaseForm.value);
   }
 }

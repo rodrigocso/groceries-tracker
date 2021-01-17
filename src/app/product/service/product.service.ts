@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { Product } from '../../core/model/product';
-import { Brand } from '../../core/model/brand';
 
 @Injectable()
 export class ProductService {
@@ -13,7 +12,7 @@ export class ProductService {
     return this.http.post<Product>('http://localhost:8080/products', product);
   }
   
-  findProductsByNameAndBrandId(brand: Brand, query: string): Observable<Product[]> {
-    return this.http.get<Product[]>(`http://localhost:8080/products/brand/${brand.id}/search?partialName=${query}`);
+  findProductsByNameAndBrandId(brandId: number, query: string): Observable<Product[]> {
+    return this.http.get<Product[]>(`http://localhost:8080/products/brand/${brandId}/search?partialName=${query}`);
   }
 }

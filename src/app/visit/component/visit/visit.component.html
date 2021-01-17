@@ -1,15 +1,17 @@
 <mat-card fxLayout="column" fxLayoutGap="20px">
-  <form fxLayout="column" fxLayoutGap="20px" [formGroup]="form">
-    <div fxLayout="row" fxLayoutGap="30px">
-      <div fxFlex="50">
-        <mat-form-field appearance="fill">
+  <form fxLayout="column" fxLayoutGap="20px">
+    <div fxLayout="row" fxLayoutGap="20px">
+      <div fxFlex="calc(50% - 20px)">
+        <app-date-picker [formControl]="transactionDateCtrl" label="When was the visit?">
+        </app-date-picker>
+        <!-- <mat-form-field appearance="fill">
           <mat-label>When was the visit?</mat-label>
           <input matInput [matDatepicker]="picker" [formControl]="transactionDateCtrl">
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
+        </mat-form-field> -->
       </div>
-      <div fxFlex="50">
+      <div fxFlex="calc(50% - 20px)">
         <app-search-selector
           label="Store"
           [fetchFn]="fetchStoresFn"
@@ -29,6 +31,19 @@
         [formControl]="itemCtrl"
         (actionClick)="navigateToNewProduct()">
       </app-search-selector>
+    </div>
+    <div fxLayout="row" fxLayoutGap="20px">
+      <mat-form-field appearance="fill" fxFlex="calc(100% / 3 - 20px)">
+        <mat-label>Quantity</mat-label>
+        <input type="number" matInput [formControl]="quantityCtrl">
+      </mat-form-field>
+      <mat-form-field appearance="fill" fxFlex="calc(100% / 3 - 20px)">
+        <mat-label>Price</mat-label>
+        <input type="number" matInput [formControl]="priceCtrl">
+      </mat-form-field>
+      <button type="button" class="inline-form" mat-flat-button color="primary" fxFlex="calc(100% / 3 - 20px)" (click)="onAddPurchaseClick()">
+        Add Purchase
+      </button>
     </div>
   </form>
   <section fxLayout="column" fxLayoutGap="15px">

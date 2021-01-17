@@ -28,11 +28,11 @@ export class EditComponent implements OnInit, OnDestroy {
   productForm = this.fb.group({
     id: [null, Validators.required],
     name: [null, Validators.required],
-    brandId: [null, Validators.required]
+    brandId: this.brandCtrl
   });
 
   itemForm = this.fb.group({
-    productId: [null, Validators.required],
+    productId: this.productCtrl,
     packageSize: this.packageSizeCtrl,
     unit: this.unitCtrl
   });
@@ -69,37 +69,19 @@ export class EditComponent implements OnInit, OnDestroy {
 
     this.brandCtrl.statusChanges
       .pipe(takeUntil(this.componentDestroyed$))
-      .subscribe(() => {
-        if (this.brandCtrl.valid) {
-          this.productForm.patchValue({ brandId: this.brandCtrl.value.id });
-          this.productCtrl.enable({ emitEvent: false });
-        } else {
-          this.productCtrl.reset();
-          this.productCtrl.disable({ emitEvent: false });
-        }
-      });
+      .subscribe(() => this.brandCtrl.valid ? this.productCtrl.enable({ emitEvent: false }) : this.productCtrl.disable());
 
     this.productCtrl.valueChanges
       .pipe(takeUntil(this.componentDestroyed$))
-      .subscribe((product: Product) => {
-        if (product?.id) {
-          this.productForm.patchValue(product);
-          this.itemForm.patchValue({ productId: product.id });
-          this.items$ = this.itemService.findItemsByProduct(product.id)
-            .pipe(
-              tap(items => this.unitCtrl.setValue(items?.[0]?.unit))
-            );
+      .subscribe((productId: number) => {
+        if (productId) {
+          this.itemForm.enable({ emitEvent: false });
+          this.items$ = this.itemService.findItemsByProduct(productId)
+            .pipe(tap(items => this.unitCtrl.setValue(items?.[0]?.unit)));
         } else {
-          this.items$ = EMPTY;
-          this.unitCtrl.reset();
-          this.productForm.reset();
-          this.productForm.patchValue({ brand: this.brandCtrl.value || {} });
+          this.itemForm.disable();
         }
       });
-    
-    this.productForm.statusChanges
-      .pipe(takeUntil(this.componentDestroyed$))
-      .subscribe(() => this.productForm.valid ? this.itemForm.enable() : this.itemForm.disable());
   }
 
   ngOnDestroy(): void {
@@ -108,7 +90,8 @@ export class EditComponent implements OnInit, OnDestroy {
   }
 
   onAddBrandClicked(name: string): void {
-    this.brandService.addOne({ name }).subscribe(brand => this.brandCtrl.setValue(brand));
+    this.brandService.addOne({ name })
+      .subscribe(brand => this.brandCtrl.setValue(brand, { emitEvent: false }));
   }
 
   onAddPackagingClick(): void {
