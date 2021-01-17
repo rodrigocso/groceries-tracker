@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { EMPTY, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, takeUntil, tap } from 'rxjs/operators';
 
 import { Brand } from '../../../core/model/brand';
 import { ItemDto } from '../../../core/model/item';
@@ -88,7 +88,8 @@ export class EditComponent implements OnInit, OnDestroy {
         if (this.productCtrl.valid) {
           this.packageSizeCtrl.enable();
           this.unitCtrl.enable();
-          this.items$ = this.itemService.findItemsByProduct(productId);
+          this.items$ = this.itemService.findItemsByProduct(productId)
+            .pipe(tap(items => this.unitCtrl.setValue(items?.[0]?.unit)));
         } else {
           this.packageSizeCtrl.reset();
           this.packageSizeCtrl.disable();
