@@ -19,7 +19,7 @@ import { PurchaseService } from '../../../core/service/purchase.service';
 export class VisitComponent implements OnDestroy, OnInit {
   componentDestroyed$ = new Subject();
   purchases$: Observable<Purchase[]> = EMPTY;
- 
+
   itemCtrl = new FormControl(null, Validators.required);
   priceCtrl = new FormControl(null, Validators.required);
   quantityCtrl = new FormControl(null, Validators.required);
@@ -66,14 +66,32 @@ export class VisitComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
+    this.itemCtrl.disable();
+    this.quantityCtrl.disable();
+    this.priceCtrl.disable();
+
     combineLatest([this.storeCtrl.valueChanges, this.transactionDateCtrl.valueChanges])
-      .pipe(
-        takeUntil(this.componentDestroyed$)
-      )
+      .pipe(takeUntil(this.componentDestroyed$))
       .subscribe(([storeId, date]: [number, string]) => {
-        this.purchases$ = storeId === null || date === null ?
-          EMPTY :
-          this.purchaseService.findPurchasesByStoreAndDate(storeId, date);
+        if (storeId === null || date === null) {
+          this.purchases$ = EMPTY;
+          this.itemCtrl.disable();
+        } else {
+          this.purchases$ = this.purchaseService.findPurchasesByStoreAndDate(storeId, date);
+          this.itemCtrl.enable({ emitEvent: false });
+        }
+      });
+
+    this.itemCtrl.statusChanges
+      .pipe(takeUntil(this.componentDestroyed$))
+      .subscribe(() => {
+        if (this.itemCtrl.valid) {
+          this.quantityCtrl.enable();
+          this.priceCtrl.enable();
+        } else {
+          this.quantityCtrl.disable();
+          this.priceCtrl.disable();
+        }
       });
   }
 
@@ -90,7 +108,7 @@ export class VisitComponent implements OnDestroy, OnInit {
     this.purchaseService.addOne(this.purchaseForm.value).subscribe(purchase => {
       this.purchases$ = this.purchaseService
         .findPurchasesByStoreAndDate(purchase.storeId, purchase.transactionDate);
-      
+
       this.itemCtrl.reset();
       this.quantityCtrl.reset();
       this.priceCtrl.reset();
