@@ -6,9 +6,9 @@ import { takeUntil, tap } from 'rxjs/operators';
 import { Brand } from '../../../core/model/brand';
 import { ItemDto } from '../../../core/model/item';
 import { Product } from '../../../core/model/product';
-import { BrandService } from '../../service/brand.service';
-import { ItemService } from '../../service/item.service';
-import { ProductService } from '../../service/product.service';
+import { BrandService } from '../../../core/service/brand.service';
+import { ItemService } from '../../../core/service/item.service';
+import { ProductService } from '../../../core/service/product.service';
 
 @Component({
   templateUrl: './edit.component.html',
@@ -104,7 +104,7 @@ export class EditComponent implements OnInit, OnDestroy {
     this.productForm.patchValue({ name });
     this.productService.addOne(this.productForm.value)
       .subscribe(product => {
-        this.productForm.patchValue(product);
+        this.productForm.patchValue({ id: product.id });
         this.productCtrl.setValue(product);
       });
   }

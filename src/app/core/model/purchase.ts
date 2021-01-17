@@ -8,3 +8,12 @@ export interface Purchase {
   quantity: number;
   price: number;
 }
+
+export interface PurchaseDto {
+  id: number;
+  storeId: number;
+  transactionDate: string;
+  itemId: number;
+  quantity: number;
+  price: number;
+}

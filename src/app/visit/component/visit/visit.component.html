@@ -41,7 +41,7 @@
         <mat-label>Price</mat-label>
         <input type="number" matInput [formControl]="priceCtrl">
       </mat-form-field>
-      <button type="button" class="inline-form" mat-flat-button color="primary" fxFlex="calc(100% / 3 - 20px)" (click)="onAddPurchaseClick()">
+      <button type="button" class="inline-form" mat-flat-button color="primary" fxFlex="calc(100% / 3 - 20px)" (click)="onAddPurchaseClick()" [disabled]="!purchaseForm.valid">
         Add Purchase
       </button>
     </div>

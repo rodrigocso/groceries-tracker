@@ -1,13 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { combineLatest, EMPTY, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { Item } from '../../../core/model/item';
 import { Purchase } from '../../../core/model/purchase';
 import { Store } from '../../../core/model/store';
-import { VisitService } from '../../service/visit.service';
 import { Router } from '@angular/router';
+import { ItemService } from '../../../core/service/item.service';
+import { StoreService } from '../../../core/service/store.service';
+import { PurchaseService } from '../../../core/service/purchase.service';
 
 @Component({
   selector: 'app-visit',
@@ -18,11 +20,11 @@ export class VisitComponent implements OnDestroy, OnInit {
   componentDestroyed$ = new Subject();
   purchases$: Observable<Purchase[]> = EMPTY;
  
-  itemCtrl = new FormControl();
-  priceCtrl = new FormControl();
-  quantityCtrl = new FormControl();
-  storeCtrl = new FormControl();
-  transactionDateCtrl = new FormControl();
+  itemCtrl = new FormControl(null, Validators.required);
+  priceCtrl = new FormControl(null, Validators.required);
+  quantityCtrl = new FormControl(null, Validators.required);
+  storeCtrl = new FormControl(null, Validators.required);
+  transactionDateCtrl = new FormControl(null, Validators.required);
 
   purchaseForm = this.fb.group({
     itemId: this.itemCtrl,
@@ -32,14 +34,19 @@ export class VisitComponent implements OnDestroy, OnInit {
     transactionDate: this.transactionDateCtrl
   });
 
-  constructor(private visitService: VisitService, private fb: FormBuilder, private router: Router) { }
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private itemService: ItemService,
+    private purchaseService: PurchaseService,
+    private storeService: StoreService) { }
 
   get fetchItemsFn(): (query: string) => Observable<Item[]> {
-    return this.visitService.findProductsByNameOrBrand.bind(this.visitService);
+    return this.itemService.findProductsByNameOrBrand.bind(this.itemService);
   }
 
   get fetchStoresFn(): (query: string) => Observable<Store[]> {
-    return this.visitService.findStoresByName.bind(this.visitService);
+    return this.storeService.findStoresByName.bind(this.storeService);
   }
 
   get itemProductNameGetter(): (item: Item) => string {
@@ -66,7 +73,7 @@ export class VisitComponent implements OnDestroy, OnInit {
       .subscribe(([storeId, date]: [number, string]) => {
         this.purchases$ = storeId === null || date === null ?
           EMPTY :
-          this.visitService.findPurchasesByStoreAndDate(storeId, date);
+          this.purchaseService.findPurchasesByStoreAndDate(storeId, date);
       });
   }
 
@@ -80,6 +87,13 @@ export class VisitComponent implements OnDestroy, OnInit {
   }
 
   onAddPurchaseClick(): void {
-    console.log(this.purchaseForm.value);
+    this.purchaseService.addOne(this.purchaseForm.value).subscribe(purchase => {
+      this.purchases$ = this.purchaseService
+        .findPurchasesByStoreAndDate(purchase.storeId, purchase.transactionDate);
+      
+      this.itemCtrl.reset();
+      this.quantityCtrl.reset();
+      this.priceCtrl.reset();
+    });
   }
 }

@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { Brand } from '../../core/model/brand';
+import { Brand } from '../model/brand';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class BrandService {
   constructor(private http: HttpClient) { }
 
