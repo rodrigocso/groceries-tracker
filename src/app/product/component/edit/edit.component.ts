@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { EMPTY, Observable, Subject } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { Brand } from '../../../core/model/brand';
 import { ItemDto } from '../../../core/model/item';
@@ -65,21 +65,36 @@ export class EditComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.productCtrl.disable();
-    this.itemForm.disable();
+    this.packageSizeCtrl.disable();
+    this.unitCtrl.disable();
 
     this.brandCtrl.statusChanges
       .pipe(takeUntil(this.componentDestroyed$))
-      .subscribe(() => this.brandCtrl.valid ? this.productCtrl.enable({ emitEvent: false }) : this.productCtrl.disable());
+      .subscribe(() => {
+        if (this.brandCtrl.valid) {
+          this.productCtrl.enable();
+        } else {
+          this.productCtrl.reset();
+          this.productCtrl.disable({ emitEvent: false });
+        }
+      });
 
     this.productCtrl.valueChanges
-      .pipe(takeUntil(this.componentDestroyed$))
+      .pipe(
+        takeUntil(this.componentDestroyed$),
+        distinctUntilChanged()
+      )
       .subscribe((productId: number) => {
-        if (productId) {
-          this.itemForm.enable({ emitEvent: false });
-          this.items$ = this.itemService.findItemsByProduct(productId)
-            .pipe(tap(items => this.unitCtrl.setValue(items?.[0]?.unit)));
+        if (this.productCtrl.valid) {
+          this.packageSizeCtrl.enable();
+          this.unitCtrl.enable();
+          this.items$ = this.itemService.findItemsByProduct(productId);
         } else {
-          this.itemForm.disable();
+          this.packageSizeCtrl.reset();
+          this.packageSizeCtrl.disable();
+          this.unitCtrl.reset();
+          this.unitCtrl.disable();
+          this.items$ = EMPTY;
         }
       });
   }

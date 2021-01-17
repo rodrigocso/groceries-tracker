@@ -50,7 +50,7 @@
     </form>
     <mat-form-field appearance="fill">
       <mat-label>Available Packaging</mat-label>
-      <mat-chip-list #chipList>
+      <mat-chip-list #chipList [disabled]="!(items$ | async)">
         <mat-chip *ngFor="let item of items$ | async">
           {{ item.packageSize }}{{ item.unit }}
         </mat-chip>
