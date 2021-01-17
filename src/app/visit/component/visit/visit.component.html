@@ -32,8 +32,11 @@
         <input type="number" matInput [formControl]="quantityCtrl">
       </mat-form-field>
       <mat-form-field appearance="fill" fxFlex="calc(100% / 3 - 20px)">
-        <mat-label>Price</mat-label>
+        <mat-label>Total Paid</mat-label>
         <input type="number" matInput [formControl]="priceCtrl">
+        <button type="button" matSuffix mat-icon-button color="accent" [disabled]="!priceCtrl.value" (click)="showDiscountDialog()">
+          <mat-icon>local_offer</mat-icon>
+        </button>
       </mat-form-field>
       <button type="button" class="inline-form" mat-flat-button color="primary" fxFlex="calc(100% / 3 - 20px)" (click)="onAddPurchaseClick()" [disabled]="!purchaseForm.valid">
         Add Purchase
@@ -42,6 +45,11 @@
   </form>
   <section fxLayout="column" fxLayoutGap="15px">
     <div *ngFor="let p of purchases$ | async" fxLayout="row" fxLayoutAlign="space-between center">
+      <div>
+        <button type="button" matSuffix mat-icon-button color="warn" (click)="deletePurchase(p.id)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
       <div>
         <div class="primary-info">
           {{ p.item.product.name }}
@@ -53,10 +61,12 @@
       <div class="connector" fxFlex="1 1 100"></div>
       <div fxLayout="column" fxLayoutAlign="center end">
         <div class="price">
-          {{ p.price | currency: 'EUR' }}
+          {{ p.price * p.quantity | currency: 'EUR' }}
         </div>
-        <div class="quantity">
-          Qty: {{ p.quantity }}
+        <div class="quantity" fxLayout="row" fxLayoutGap="5px" fxLayoutAlign="end center">
+          <div>{{ p.quantity }}</div>
+          <mat-icon inline>close</mat-icon>
+          <div>{{ p.price }}</div>
         </div>
       </div>
     </div>

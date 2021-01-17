@@ -15,4 +15,8 @@ export class PurchaseService {
   findPurchasesByStoreAndDate(storeId: number, formattedDate: string): Observable<Purchase[]> {
     return this.http.get<Purchase[]>(`http://localhost:8080/purchases/store/${storeId}/${formattedDate}`);
   }
+
+  removeOne(purchaseId: number): Observable<void> {
+    return this.http.delete<void>(`http://localhost:8080/purchases/${purchaseId}`);
+  }
 }

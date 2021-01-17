@@ -1,15 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { combineLatest, EMPTY, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { Item } from '../../../core/model/item';
-import { Purchase } from '../../../core/model/purchase';
+import { Purchase, PurchaseDto } from '../../../core/model/purchase';
 import { Store } from '../../../core/model/store';
 import { Router } from '@angular/router';
 import { ItemService } from '../../../core/service/item.service';
 import { StoreService } from '../../../core/service/store.service';
 import { PurchaseService } from '../../../core/service/purchase.service';
+import { DiscountDialogComponent } from '../discount-dialog/discount-dialog.component';
 
 @Component({
   selector: 'app-visit',
@@ -21,8 +23,8 @@ export class VisitComponent implements OnDestroy, OnInit {
   purchases$: Observable<Purchase[]> = EMPTY;
 
   itemCtrl = new FormControl(null, Validators.required);
-  priceCtrl = new FormControl(null, Validators.required);
-  quantityCtrl = new FormControl(null, Validators.required);
+  priceCtrl = new FormControl(null, [Validators.required, Validators.min(0)]);
+  quantityCtrl = new FormControl(null, [Validators.required, Validators.min(0)]);
   storeCtrl = new FormControl(null, Validators.required);
   transactionDateCtrl = new FormControl(null, Validators.required);
 
@@ -35,6 +37,7 @@ export class VisitComponent implements OnDestroy, OnInit {
   });
 
   constructor(
+    private dialog: MatDialog,
     private fb: FormBuilder,
     private router: Router,
     private itemService: ItemService,
@@ -100,12 +103,22 @@ export class VisitComponent implements OnDestroy, OnInit {
     this.componentDestroyed$.complete();
   }
 
+  deletePurchase(purchaseId: number): void {
+    this.purchaseService.removeOne(purchaseId)
+      .subscribe(() => this.purchases$ = this.purchaseService
+        .findPurchasesByStoreAndDate(this.storeCtrl.value, this.transactionDateCtrl.value)
+      )
+  }
+
   navigateToNewProduct(): void {
     this.router.navigate(['/product']);
   }
 
   onAddPurchaseClick(): void {
-    this.purchaseService.addOne(this.purchaseForm.value).subscribe(purchase => {
+    const purchase: PurchaseDto = this.purchaseForm.value;
+    purchase.price = Math.round(purchase.price / purchase.quantity * 100) / 100;
+
+    this.purchaseService.addOne(purchase).subscribe(purchase => {
       this.purchases$ = this.purchaseService
         .findPurchasesByStoreAndDate(purchase.storeId, purchase.transactionDate);
 
@@ -113,5 +126,15 @@ export class VisitComponent implements OnDestroy, OnInit {
       this.quantityCtrl.reset();
       this.priceCtrl.reset();
     });
+  }
+
+  showDiscountDialog(): void {
+    this.dialog.open(DiscountDialogComponent, { width: '150px' }).afterClosed()
+      .subscribe(discount => {
+        if (discount) {
+          const discounted = Math.round((this.priceCtrl.value - discount) * 100) / 100;
+          this.priceCtrl.setValue(Math.max(discounted, 0));
+        }
+      });
   }
 }
