@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
-import { EMPTY, Observable, Subject } from 'rxjs';
+import { asyncScheduler, EMPTY, Observable, of, scheduled, Subject } from 'rxjs';
 import { distinctUntilChanged, takeUntil, tap } from 'rxjs/operators';
 
 import { Brand } from '../../../core/model/brand';
@@ -117,7 +117,7 @@ export class EditComponent implements OnInit, OnDestroy {
   }
 
   onAddProductClicked(name: string): void {
-    this.productForm.patchValue({ name });
+    this.productForm.patchValue({ id: null, name });
     this.productService.addOne(this.productForm.value)
       .subscribe(product => {
         this.productForm.patchValue({ id: product.id });
