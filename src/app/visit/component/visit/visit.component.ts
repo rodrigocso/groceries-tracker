@@ -81,7 +81,7 @@ export class VisitComponent implements OnDestroy, OnInit {
           this.itemCtrl.disable();
         } else {
           this.purchases$ = this.purchaseService.findPurchasesByStoreAndDate(storeId, date);
-          this.itemCtrl.enable({ emitEvent: false });
+          this.itemCtrl.enable();
         }
       });
 
