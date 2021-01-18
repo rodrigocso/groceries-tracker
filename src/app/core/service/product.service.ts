@@ -11,6 +11,10 @@ export class ProductService {
   addOne(product: Product): Observable<Product> {
     return this.http.post<Product>('http://localhost:8080/products', product);
   }
+
+  deleteOne(productId: number): Observable<void> {
+    return this.http.delete<void>(`http://localhost:8080/products/${productId}`);
+  }
   
   findProductsByNameAndBrandId(brandId: number, query: string): Observable<Product[]> {
     return this.http.get<Product[]>(`http://localhost:8080/products/brand/${brandId}/search?partialName=${query}`);
