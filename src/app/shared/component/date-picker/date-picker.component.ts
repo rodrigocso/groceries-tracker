@@ -1,5 +1,7 @@
-import { Component, forwardRef, Input, OnInit } from '@angular/core';
+import { Component, forwardRef, Input, OnDestroy, OnInit } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { debounceTime, filter, takeUntil } from 'rxjs/operators';
 import * as moment from 'moment';
 
 @Component({
@@ -14,9 +16,11 @@ import * as moment from 'moment';
     }
   ]
 })
-export class DatePickerComponent implements OnInit, ControlValueAccessor {
+export class DatePickerComponent implements OnInit, OnDestroy, ControlValueAccessor {
   @Input() formControl = new FormControl();
   @Input() label = '';
+
+  componentDestroyed$ = new Subject();
 
   inputCtrl = new FormControl();
   onChange: any = () => {};
@@ -25,10 +29,19 @@ export class DatePickerComponent implements OnInit, ControlValueAccessor {
   ngOnInit(): void {
     this.inputCtrl.setValidators(this.formControl.validator);
     this.inputCtrl.valueChanges
-      .pipe()
+      .pipe(
+        debounceTime(300),
+        filter(val => moment.isMoment(val)),
+        takeUntil(this.componentDestroyed$)
+      )
       .subscribe((val: moment.Moment) => {
         this.writeValue(val.format('yyyyMMDD'));
-      })
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.componentDestroyed$.next();
+    this.componentDestroyed$.complete();
   }
 
   writeValue(date: string): void {
