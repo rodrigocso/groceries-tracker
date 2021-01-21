@@ -17,7 +17,7 @@ import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/oper
   encapsulation: ViewEncapsulation.None
 })
 export class SearchSelectorComponent implements OnInit, OnDestroy, ControlValueAccessor {
-  @Input() action?: "new" | "save";
+  @Input() action?: 'new' | 'save';
   @Input() alwaysShowLabel = false;
   @Input() formControl = new FormControl();
   @Input() label = '';
@@ -27,7 +27,8 @@ export class SearchSelectorComponent implements OnInit, OnDestroy, ControlValueA
 
   @Output() actionClick = new EventEmitter<string>();
 
-  componentDestroyed$ = new Subject();
+  private componentDestroyed$ = new Subject();
+
   hasSecondaryText = false;
   inputCtrl = new FormControl();
   onChange: any = () => {};
@@ -51,7 +52,7 @@ export class SearchSelectorComponent implements OnInit, OnDestroy, ControlValueA
         } else {
           this.searchResults$ = this.fetchFn(query);
         }
-      })
+      });
   }
 
   ngOnDestroy(): void {
