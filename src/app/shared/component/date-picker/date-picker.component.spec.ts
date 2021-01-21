@@ -3,11 +3,11 @@ import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { MatDatepickerInputHarness } from '@angular/material/datepicker/testing';
 import { HarnessLoader } from '@angular/cdk/testing';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { DatePickerComponent } from './date-picker.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { DatePickerComponent } from './date-picker.component';
 
 describe('DatePickerComponent', () => {
   let fixture: ComponentFixture<DatePickerComponent>;
