@@ -35,7 +35,7 @@ export class DatePickerComponent implements OnInit, OnDestroy, ControlValueAcces
         takeUntil(this.componentDestroyed$)
       )
       .subscribe((val: moment.Moment) => {
-        this.writeValue(val.format('yyyyMMDD'));
+        this.onChange(val.format('yyyyMMDD'));
       });
   }
 
@@ -45,7 +45,7 @@ export class DatePickerComponent implements OnInit, OnDestroy, ControlValueAcces
   }
 
   writeValue(date: string): void {
-    this.onChange(date);
+    this.inputCtrl.setValue(date);
   }
 
   registerOnChange(fn: any): void {
