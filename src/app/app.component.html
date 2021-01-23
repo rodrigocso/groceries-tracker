@@ -1,9 +1,9 @@
 <mat-toolbar color="primary" fxLayout="row" fxLayoutAlign="center center">
-  <nav fxLayout="row" fxLayoutAlign="start center" fxFlex="500px">
+  <nav fxLayout="row" fxLayoutAlign="start center"  fxLayoutGap="10px" fxFlex="500px">
     <button mat-icon-button [matMenuTriggerFor]="menu">
       <mat-icon>more_vert</mat-icon>
     </button>
-    <span>Groceries Tracker</span>
+    <div>Groceries Tracker</div>
     <mat-menu #menu="matMenu">
       <a routerLink="/visit" routerLinkActive="active-link" mat-menu-item>
         <mat-icon>receipt_long</mat-icon>
