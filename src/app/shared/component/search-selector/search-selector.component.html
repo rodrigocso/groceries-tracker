@@ -2,12 +2,12 @@
   <div *ngIf="value; then displaySelectedOption else selectOption"></div>
   <ng-template #displaySelectedOption>
     <mat-form-field appearance="fill" floatLabel="always">
-      <mat-label>{{ alwaysShowLabel ? label : getSecondaryText(value) }}</mat-label>
+      <mat-label>{{ alwaysShowLabel ? label : getSecondaryText(value!) }}</mat-label>
       <input matInput
              type="text"
-             [value]="primaryTextFn(value)"
+             [value]="primaryTextFn(value!)"
              readonly>
-      <button type="button" matSuffix mat-icon-button color="warn" (click)="writeValue(null)">
+      <button type="button" matSuffix mat-icon-button color="warn" (click)="onOptionSelected(null!)">
         <mat-icon>close</mat-icon>
       </button>
     </mat-form-field>
@@ -16,6 +16,7 @@
     <mat-form-field appearance="fill">
       <input matInput
              type="text"
+             (blur)="onTouched()"
              [placeholder]="label"
              [formControl]="inputCtrl"
              [matAutocomplete]="optionAutocomplete">
@@ -25,7 +26,7 @@
       <button *ngIf="action == 'new'" type="button" matSuffix mat-icon-button color="primary" (click)="actionClick.emit()">
         <mat-icon>launch</mat-icon>
       </button>
-      <mat-autocomplete class="custom-autocomplete" #optionAutocomplete="matAutocomplete" (optionSelected)="writeValue($event.option.value)">
+      <mat-autocomplete class="custom-autocomplete" #optionAutocomplete="matAutocomplete" (optionSelected)="onOptionSelected($event.option.value)">
         <mat-option *ngFor="let option of searchResults$ | async" [value]="option">
           <div class="ss-primary" [class.extended]="!hasSecondaryText">{{ primaryTextFn(option) }}</div>
           <div class="ss-secondary" *ngIf="hasSecondaryText">{{ getSecondaryText(option) }}</div>

@@ -5,6 +5,7 @@
       [alwaysShowLabel]="true"
       label="Brand"
       [fetchFn]="fetchBrandsFn"
+      [outputFn]="brandIdGetter"
       [primaryTextFn]="brandNameGetter"
       [formControl]="brandCtrl"
       (actionClick)="onAddBrandClicked($event)">
@@ -14,6 +15,7 @@
       [alwaysShowLabel]="true"
       label="Product"
       [fetchFn]="fetchProductsFn"
+      [outputFn]="productIdGetter"
       [primaryTextFn]="productNameGetter"
       [secondaryTextFn]="productBrandNameGetter"
       [formControl]="productCtrl"

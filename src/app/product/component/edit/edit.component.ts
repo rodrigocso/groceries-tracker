@@ -51,8 +51,16 @@ export class EditComponent implements OnInit, OnDestroy {
     return this.productService.findProductsByNameAndBrandId.bind(this.productService, this.brandCtrl.value);
   }
 
+  get brandIdGetter(): (brand: Brand) => number {
+    return (brand) => brand.id!;
+  }
+
   get brandNameGetter(): (brand: Brand) => string {
     return (brand) => brand.name;
+  }
+
+  get productIdGetter(): (product: Product) => number {
+    return (product) => product.id!;
   }
 
   get productNameGetter(): (product: Product) => string {

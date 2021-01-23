@@ -9,6 +9,7 @@
         <app-search-selector
           label="Store"
           [fetchFn]="fetchStoresFn"
+          [outputFn]="storeIdGetter"
           [primaryTextFn]="storeNameGetter"
           [secondaryTextFn]="storeCityGetter"
           [formControl]="storeCtrl">
@@ -20,6 +21,7 @@
         action="new"
         label="Product"
         [fetchFn]="fetchItemsFn"
+        [outputFn]="itemIdGetter"
         [primaryTextFn]="itemProductNameGetter"
         [secondaryTextFn]="itemDetailsGetter"
         [formControl]="itemCtrl"

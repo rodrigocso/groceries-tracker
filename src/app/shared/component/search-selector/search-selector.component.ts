@@ -1,7 +1,7 @@
 import { Component, EventEmitter, forwardRef, Input, OnDestroy, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { EMPTY, Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-search-selector',
@@ -16,14 +16,15 @@ import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/oper
   ],
   encapsulation: ViewEncapsulation.None
 })
-export class SearchSelectorComponent implements OnInit, OnDestroy, ControlValueAccessor {
+export class SearchSelectorComponent<T> implements OnInit, OnDestroy, ControlValueAccessor {
   @Input() action?: 'new' | 'save';
   @Input() alwaysShowLabel = false;
   @Input() formControl = new FormControl();
   @Input() label = '';
-  @Input() fetchFn: (query: string) => Observable<any[]> = () => EMPTY;
-  @Input() primaryTextFn: (value: any) => string = (value) => value;
-  @Input() secondaryTextFn?: (value: any) => string;
+  @Input() fetchFn!: (query: string) => Observable<T[]>;
+  @Input() outputFn?: (value: T) => any;
+  @Input() primaryTextFn!: (value: T) => string;
+  @Input() secondaryTextFn?: (value: T) => string;
 
   @Output() actionClick = new EventEmitter<string>();
 
@@ -33,17 +34,18 @@ export class SearchSelectorComponent implements OnInit, OnDestroy, ControlValueA
   inputCtrl = new FormControl();
   onChange: any = () => {};
   onTouched: any = () => {};
-  searchResults$: Observable<any[]> = EMPTY;
-  value?: any;
+  searchResults$: Observable<T[]> = EMPTY;
+  value?: T;
 
   ngOnInit(): void {
+    this.checkRequiredInput(this.fetchFn, 'fetchFn');
+    this.checkRequiredInput(this.primaryTextFn, 'primaryTextFn');
     this.hasSecondaryText = this.secondaryTextFn !== undefined;
     this.inputCtrl.setValidators(this.formControl.validator);
     this.inputCtrl.valueChanges
       .pipe(
         debounceTime(300),
         distinctUntilChanged(),
-        filter(value => typeof value === 'string'),
         takeUntil(this.componentDestroyed$)
       )
       .subscribe(query => {
@@ -60,15 +62,19 @@ export class SearchSelectorComponent implements OnInit, OnDestroy, ControlValueA
     this.componentDestroyed$.complete();
   }
 
-  getSecondaryText(value: any): string | null {
-    return this.secondaryTextFn ? this.secondaryTextFn(value) : null;
+  getSecondaryText(value: T): string | null {
+    return this.secondaryTextFn?.(value) || null;
   }
 
-  writeValue(obj: any): void {
-    this.onChange(obj?.id || obj);
+  onOptionSelected(obj: T): void {
+    this.onChange(this.outputFn?.(obj) || obj);
     this.value = obj;
     this.inputCtrl.reset();
     this.searchResults$ = EMPTY;
+  }
+
+  writeValue(obj: T): void {
+    this.value = obj;
   }
 
   registerOnChange(fn: any): void {
@@ -84,6 +90,12 @@ export class SearchSelectorComponent implements OnInit, OnDestroy, ControlValueA
       this.inputCtrl.disable();
     } else {
       this.inputCtrl.enable();
+    }
+  }
+
+  private checkRequiredInput(input: any, inputName: string): void {
+    if (input === undefined) {
+      throw new Error(`${inputName} was not provided.`);
     }
   }
 }

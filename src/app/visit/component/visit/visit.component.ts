@@ -52,6 +52,14 @@ export class VisitComponent implements OnDestroy, OnInit {
     return this.storeService.findStoresByName.bind(this.storeService);
   }
 
+  get itemIdGetter(): (item: Item) => number {
+    return (item) => item?.id;
+  }
+
+  get storeIdGetter(): (store: Store) => number {
+    return (store) => store?.id;
+  }
+
   get itemProductNameGetter(): (item: Item) => string {
     return (item) => item?.product.name;
   }
