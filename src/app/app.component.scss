@@ -1,0 +1,19 @@
+mat-toolbar {
+  height: 64px;
+
+  nav {
+    min-width: 300px !important;
+  }
+}
+
+a.active-link {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+mat-card {
+  height: calc(100vh - 96px);
+  margin: 0 auto;
+  max-width: 500px;
+  overflow-y: auto;
+}
