@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 import { Item, ItemDto } from '../model/item';
 
@@ -18,5 +18,9 @@ export class ItemService {
 
   findProductsByNameOrBrand(query: string): Observable<Item[]> {
     return this.http.get<Item[]>(`http://localhost:8080/items/search?brandOrProductName=${query}`);
+  }
+
+  getUnits(): Observable<string[]> {
+    return of(['g', 'kg', 'mL', 'cL', 'L', 'un']);
   }
 }

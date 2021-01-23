@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
-import { asyncScheduler, EMPTY, Observable, of, scheduled, Subject } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { EMPTY, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, takeUntil, tap } from 'rxjs/operators';
 
 import { Brand } from '../../../core/model/brand';
@@ -23,7 +24,7 @@ export class EditComponent implements OnInit, OnDestroy {
   unitCtrl = new FormControl(null, Validators.required);
 
   items$: Observable<ItemDto[]> = EMPTY;
-  units = ['g', 'kg', 'mL', 'cL', 'L', 'un'];
+  units: string[] = [];
 
   productForm = this.fb.group({
     id: [null, Validators.required],
@@ -38,6 +39,7 @@ export class EditComponent implements OnInit, OnDestroy {
   });
 
   constructor(
+    private route: ActivatedRoute,
     private fb: FormBuilder,
     private brandService: BrandService,
     private itemService: ItemService,
@@ -51,16 +53,16 @@ export class EditComponent implements OnInit, OnDestroy {
     return this.productService.findProductsByNameAndBrandId.bind(this.productService, this.brandCtrl.value);
   }
 
-  get brandIdGetter(): (brand: Brand) => number {
-    return (brand) => brand.id!;
+  get brandIdGetter(): (brand: Brand) => number | undefined {
+    return (brand) => brand?.id;
   }
 
   get brandNameGetter(): (brand: Brand) => string {
     return (brand) => brand.name;
   }
 
-  get productIdGetter(): (product: Product) => number {
-    return (product) => product.id!;
+  get productIdGetter(): (product: Product) => number | undefined {
+    return (product) => product?.id;
   }
 
   get productNameGetter(): (product: Product) => string {
@@ -72,6 +74,7 @@ export class EditComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.units = this.route.snapshot.data.units;
     this.productCtrl.disable();
     this.packageSizeCtrl.disable();
     this.unitCtrl.disable();
