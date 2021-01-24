@@ -45,7 +45,7 @@ export class DatePickerComponent implements OnInit, OnDestroy, ControlValueAcces
   }
 
   writeValue(date: string): void {
-    this.inputCtrl.setValue(date);
+    this.inputCtrl.setValue(moment(date, 'MM/DD/yyyy'));
   }
 
   registerOnChange(fn: any): void {
