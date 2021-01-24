@@ -8,8 +8,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { DatePickerComponent } from './date-picker.component';
+import * as moment from 'moment';
 
 describe('DatePickerComponent', () => {
+  let datePicker: DatePickerComponent;
   let fixture: ComponentFixture<DatePickerComponent>;
   let loader: HarnessLoader;
 
@@ -29,7 +31,7 @@ describe('DatePickerComponent', () => {
         ]
       }).compileComponents();
       fixture = TestBed.createComponent(DatePickerComponent);
-      fixture.detectChanges();
+      datePicker = fixture.componentInstance;
       loader = TestbedHarnessEnvironment.loader(fixture);
     })
   );
@@ -49,16 +51,58 @@ describe('DatePickerComponent', () => {
 
   it('should set the label value', async () => {
     const labelElement: HTMLElement = fixture.nativeElement.querySelector('mat-label');
-    fixture.componentInstance.label = 'Test Date';
+    datePicker.label = 'Test Date';
     fixture.detectChanges();
-    expect(labelElement.textContent).toEqual(fixture.componentInstance.label);
+    expect(labelElement.textContent).toEqual(datePicker.label);
   });
 
   it('should transmit date in yyyyMMDD format', async () => {
     const input = await loader.getHarness(MatDatepickerInputHarness);
-    fixture.componentInstance.registerOnChange(
+    datePicker.registerOnChange(
       (date: string) => expect(date).toEqual('20200101')
     );
     await input.setValue('1/1/2020');
+  });
+
+  it('it should implement ControlValueAccessor.registerOnTouched', async () => {
+    const onTouched = jasmine.createSpy('onTouched');
+    datePicker.registerOnTouched(onTouched);
+
+    const input = await loader.getHarness(MatDatepickerInputHarness);
+    expect(await input.isFocused()).toBe(false);
+    await input.focus();
+    expect(await input.isFocused()).toBe(true);
+    await input.blur();
+    expect(await input.isFocused()).toBe(false);
+    expect(onTouched).toHaveBeenCalled();
+  });
+
+  it('should implement ControlValueAccessor.writeValue', async () => {
+    const date = '01/01/2021';
+    datePicker.writeValue(date);
+    fixture.detectChanges();
+
+    const input = await loader.getHarness(MatDatepickerInputHarness);
+    expect(await input.getValue()).toBe(moment(date, 'MM/DD/yyyy').format('l'));
+  });
+
+  it('should implement ControlValueAccessor.registerOnChange', async () => {
+    const onChange = jasmine.createSpy('onChange');
+    datePicker.registerOnChange(onChange);
+
+    const input = await loader.getHarness(MatDatepickerInputHarness);
+    await input.setValue('1/1/2020');
+
+    expect(onChange).toHaveBeenCalledOnceWith('20200101');
+  });
+
+  it('should implement ControlValueAccessor.setDisabledState', async () => {
+    const input = await loader.getHarness(MatDatepickerInputHarness);
+    
+    datePicker.setDisabledState(true);
+    expect(await input.isDisabled()).toBe(true);
+
+    datePicker.setDisabledState(false);
+    expect(await input.isDisabled()).toBe(false);
   });
 });
